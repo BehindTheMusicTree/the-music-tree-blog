@@ -1,0 +1,40 @@
+name: Branch Protection Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  check-branch-name:
+    name: Verify PR source branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check source branch name
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}
+          TARGET_BRANCH: ${{ github.base_ref }}
+        run: |
+          if [[ "$TARGET_BRANCH" == "main" ]]; then
+            if [[ "$SOURCE_BRANCH" =~ ^hotfix/.* ]] || [[ "$SOURCE_BRANCH" =~ ^release/.* ]]; then
+              echo "✅ Valid source branch: $SOURCE_BRANCH"
+            else
+              echo "❌ Invalid source branch: $SOURCE_BRANCH"
+              echo "Pull requests to main must come from hotfix/* or release/* branches only."
+              echo "For features or chores, target 'develop' instead. See CONTRIBUTING.md."
+              exit 1
+            fi
+          elif [[ "$TARGET_BRANCH" == "develop" ]]; then
+            if [[ "$SOURCE_BRANCH" =~ ^feature/.* ]] || \
+              [[ "$SOURCE_BRANCH" =~ ^chore/.* ]] || \
+              [[ "$SOURCE_BRANCH" =~ ^dependabot/.* ]] || \
+              [[ "$SOURCE_BRANCH" =~ ^release/.* ]]; then
+              echo "✅ Valid source branch: $SOURCE_BRANCH"
+            else
+              echo "❌ Invalid source branch: $SOURCE_BRANCH"
+              echo "Pull requests to develop must come from feature/*, chore/*, dependabot/*, or release/* branches only."
+              echo "See CONTRIBUTING.md (Branching) for Git Flow guidelines."
+              exit 1
+            fi
+          fi

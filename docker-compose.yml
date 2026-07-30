@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:11
+    image: mariadb:12.3
     restart: unless-stopped
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -11,7 +11,7 @@ services:
       - db_data:/var/lib/mysql
 
   spip:
-    image: spip/apache:8.3
+    image: spip/apache:8.5
     restart: unless-stopped
     depends_on:
       - db
