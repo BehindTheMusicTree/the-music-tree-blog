@@ -13,6 +13,7 @@ This repo is a solo practice project: a SPIP-based editorial blog for the TheMus
   - [Commits](#commits)
   - [Pull requests](#pull-requests)
 - [Releasing](#releasing)
+- [Deployment](#deployment)
 
 ## Development workflow
 
@@ -79,3 +80,7 @@ Before opening a PR:
 6. Delete the release branch.
 
 **Hotfixes:** branch from `main` as `hotfix/<name>`, fix, update `CHANGELOG.md`, merge into both `main` (tag a patch bump) and `develop`.
+
+## Deployment
+
+See [`DEPLOYMENT.md`](./DEPLOYMENT.md) for deploying the stack to GCP.

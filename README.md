@@ -2,6 +2,13 @@
 
 Editorial blog for the [TheMusicTree](https://themusictree.org) ecosystem: project updates, artist spotlights, and genre deep-dives. Built with [SPIP](https://www.spip.net/), a French open-source editorial CMS, as a hands-on way to practice SPIP's core concepts (articles, rubriques, multi-author publishing, RSS) outside the rest of the Next.js/Django-based ecosystem.
 
+## Table of contents
+
+- [Stack](#stack)
+- [Setup](#setup)
+- [Structure](#structure)
+- [Practice roadmap](#practice-roadmap)
+
 ## Stack
 
 - [SPIP](https://www.spip.net/) 4.4 (PHP)
