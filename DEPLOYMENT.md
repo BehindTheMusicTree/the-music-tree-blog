@@ -21,6 +21,11 @@ Guide for running this project's Docker Compose stack (SPIP + MariaDB) on a Goog
   - [5. Connect and install Docker](#5-connect-and-install-docker)
   - [6. Deploy the stack](#6-deploy-the-stack)
   - [7. Finish setup](#7-finish-setup)
+    - [Fix SPIP directory permissions](#fix-spip-directory-permissions)
+    - [Complete the SPIP installation](#complete-the-spip-installation)
+      - [Database connection](#database-connection)
+    - [Troubleshooting](#troubleshooting)
+    - [`.htaccess` warning](#htaccess-warning)
   - [8. Staying within Always Free](#8-staying-within-always-free)
   - [Sources](#sources)
 
@@ -161,9 +166,117 @@ Find the instance's external IP:
     --format='get(networkInterfaces[0].accessConfigs[0].natIP)'
   ```
 
-This IP is **ephemeral** by default — it can change if the instance is stopped/restarted. If you plan to point a domain at it (e.g. for HTTPS later), reserve it as a **static IP** (**VPC network → IP addresses → Reserve external static address**). Note: a reserved static IP is billed while _not_ attached to a running instance, so only reserve it if you'll keep it in use.
+This IP is **ephemeral** by default — it can change if the instance is stopped or restarted. If you plan to point a domain at it (for HTTPS later, for example), reserve it as a **static IP** (**VPC network → IP addresses → Reserve external static address**).
 
-Open `http://<INSTANCE_EXTERNAL_IP>:8080/ecrire/` and complete SPIP's install wizard, using the DB credentials from `.env`.
+> **Note:** A reserved static IP is billed while it is **not attached** to a running VM, so only reserve one if you intend to keep using it.
+
+### Fix SPIP directory permissions
+
+Before running the installer, make sure SPIP can write its configuration files.
+
+From the project root, run:
+
+```bash
+docker compose exec the-music-tree-blog-spip-1 chown -R www-data:www-data /var/www/html/config
+```
+
+If your container uses a different service name than `app`, replace it accordingly (for example `php` or `spip`).
+
+### Complete the SPIP installation
+
+Open:
+
+```
+http://<INSTANCE_EXTERNAL_IP>:8080/ecrire/
+```
+
+Follow the installation wizard:
+
+1. **Language**
+   - Select **Français**.
+
+2. **Database connection**
+   - Enter the database credentials from your `.env` file.
+   - Typical values are:
+     - **Server:** `db` (the Docker Compose service name, **not** `localhost`)
+     - **Username:** `spip`
+     - **Password:** value from `.env`
+     - **Database:** `spip`
+
+3. **Database initialization**
+   - SPIP will create the required tables automatically.
+
+4. **Administrator account**
+   - Create your administrator username and password.
+
+Once the installation is complete, your website will be available at:
+
+```
+http://<INSTANCE_EXTERNAL_IP>:8080/
+```
+
+#### Database connection
+
+When prompted for the database connection, use the values from your `.env` file.
+
+| SPIP field                  | Value                |
+| --------------------------- | -------------------- |
+| **Database server address** | `db`                 |
+| **Database login**          | `spip`               |
+| **Database password**       | Password from `.env` |
+| **Database name**           | `spip`               |
+
+> **Important:** When using Docker Compose, the database server is **`db`**, **not** `localhost`. Docker services communicate using their service names.
+
+After entering these values, click **Suivant** ("Next"). SPIP will verify the connection before creating the database tables.
+
+### Troubleshooting
+
+If SPIP reports that it cannot connect to the database, verify that the database container is running:
+
+```bash
+docker compose ps
+```
+
+Then inspect its logs:
+
+```bash
+docker compose logs db
+```
+
+If the installer reports that the `config/` directory is not writable, ensure the permissions were updated successfully and rerun:
+
+```bash
+docker compose exec app chown -R www-data:www-data /var/www/html/config
+```
+
+### `.htaccess` warning
+
+If SPIP displays the following warning:
+
+> `.htaccess` is ignored by the web server.
+
+Apache is not allowing `.htaccess` files to override its configuration.
+
+Ensure your Apache virtual host contains:
+
+```apache
+<Directory /var/www/html>
+    AllowOverride All
+    Require all granted
+</Directory>
+```
+
+Also make sure the Apache `rewrite` module is enabled:
+
+```bash
+docker compose exec spip a2enmod rewrite
+docker compose restart spip
+```
+
+If you're using the official `spip/apache` image, verify that your custom Apache configuration is mounted correctly and that `AllowOverride All` is set for the document root.
+
+After restarting Apache, reload the SPIP administration page. The warning should disappear.
 
 ## 8. Staying within Always Free
 
