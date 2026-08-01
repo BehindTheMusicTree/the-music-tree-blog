@@ -20,6 +20,7 @@ services:
     volumes:
       - ./web:/var/www/html
       - ./squelettes:/var/www/html/squelettes
+      - ./docker/apache/spip.conf:/etc/apache2/sites-available/000-default.conf:ro
 
 volumes:
   db_data:

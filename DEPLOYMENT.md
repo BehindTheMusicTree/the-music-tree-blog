@@ -177,10 +177,10 @@ Before running the installer, make sure SPIP can write its configuration files.
 From the project root, run:
 
 ```bash
-docker compose exec the-music-tree-blog-spip-1 chown -R www-data:www-data /var/www/html/config
+docker compose exec spip chown -R www-data:www-data /var/www/html/config
 ```
 
-If your container uses a different service name than `app`, replace it accordingly (for example `php` or `spip`).
+If your service name differs from `spip`, replace it accordingly.
 
 ### Complete the SPIP installation
 
@@ -247,7 +247,7 @@ docker compose logs db
 If the installer reports that the `config/` directory is not writable, ensure the permissions were updated successfully and rerun:
 
 ```bash
-docker compose exec app chown -R www-data:www-data /var/www/html/config
+docker compose exec spip chown -R www-data:www-data /var/www/html/config
 ```
 
 ### `.htaccess` warning
@@ -258,7 +258,36 @@ If SPIP displays the following warning:
 
 Apache is not allowing `.htaccess` files to override its configuration.
 
-Ensure your Apache virtual host contains:
+With the official `spip/apache` image, don't edit Apache config inside a running container. Keep a project-owned vhost file and mount it through Docker Compose.
+
+Create `docker/apache/spip.conf`:
+
+```apache
+<VirtualHost *:80>
+    DocumentRoot /var/www/html
+
+    <Directory /var/www/html>
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+Then mount it in `docker-compose.yml` on the `spip` service:
+
+```yaml
+services:
+  spip:
+    image: spip/apache:8.5
+    ports:
+      - "8080:80"
+    volumes:
+      - ./web:/var/www/html
+      - ./squelettes:/var/www/html/squelettes
+      - ./docker/apache/spip.conf:/etc/apache2/sites-available/000-default.conf:ro
+```
+
+Ensure the mounted vhost contains:
 
 ```apache
 <Directory /var/www/html>
@@ -274,7 +303,28 @@ docker compose exec spip a2enmod rewrite
 docker compose restart spip
 ```
 
-If you're using the official `spip/apache` image, verify that your custom Apache configuration is mounted correctly and that `AllowOverride All` is set for the document root.
+Verify the active virtual host configuration:
+
+```bash
+docker compose exec spip apache2ctl -S
+docker compose exec spip cat /etc/apache2/sites-available/000-default.conf
+```
+
+If you see:
+
+```apache
+<Directory /var/www/html>
+  AllowOverride None
+</Directory>
+```
+
+change it to:
+
+```apache
+<Directory /var/www/html>
+  AllowOverride All
+</Directory>
+```
 
 After restarting Apache, reload the SPIP administration page. The warning should disappear.
 
