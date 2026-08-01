@@ -163,7 +163,7 @@ Find the instance's external IP:
 
 This IP is **ephemeral** by default — it can change if the instance is stopped/restarted. If you plan to point a domain at it (e.g. for HTTPS later), reserve it as a **static IP** (**VPC network → IP addresses → Reserve external static address**). Note: a reserved static IP is billed while _not_ attached to a running instance, so only reserve it if you'll keep it in use.
 
-Open `http://<INSTANCE_EXTERNAL_IP>:8080` and complete SPIP's install wizard, using the DB credentials from `.env`.
+Open `http://<INSTANCE_EXTERNAL_IP>:8080/ecrire/` and complete SPIP's install wizard, using the DB credentials from `.env`.
 
 ## 8. Staying within Always Free
 
