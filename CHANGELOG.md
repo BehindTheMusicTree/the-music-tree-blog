@@ -22,3 +22,4 @@ When you open a PR, add bullets under **`[Unreleased]`** in the right category. 
 ### Added
 
 - Scaffolded SPIP-based blog for the TheMusicTree ecosystem (Docker Compose stack, `squelettes/` for custom templates).
+- Shared the `launch` skill between Claude and Codex, documenting SPIP setup, Docker Compose and the first-run install wizard.
