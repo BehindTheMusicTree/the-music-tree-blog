@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Scaffolded SPIP-based blog for the TheMusicTree ecosystem (Docker Compose stack, `squelettes/` for custom templates).
 - Shared the `launch` skill between Claude and Codex, documenting SPIP setup, Docker Compose and the first-run install wizard.
 
+### Fixed
+
+- **Agent directories**: Keep plans and scratch data out of Git while tracking the directory ignore rules.
+
 ### Documentation
 
 - Removed the "Changelog best practices" section from `CHANGELOG.md`; the conventions now live in the `create-pr` skill.
