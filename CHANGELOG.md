@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-17
+
 ### Added
 
 - Scaffolded SPIP-based blog for the TheMusicTree ecosystem (Docker Compose stack, `squelettes/` for custom templates).
@@ -19,4 +21,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 
 - Removed the "Changelog best practices" section from `CHANGELOG.md`; the conventions now live in the `create-pr` skill.
-
